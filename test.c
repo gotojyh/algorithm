@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include "kfifo.h"
+#include "list.h"
 
 struct __kfifo g_ff;
 typedef struct Data
