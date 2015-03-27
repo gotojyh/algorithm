@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
 #include "kfifo.h"
 
+struct __kfifo g_ff;
 typedef struct Data
 {
 	int id;
@@ -29,10 +32,53 @@ void test_1()
 
 	__kfifo_free(&ff);
 }
+pthread_mutex_t lock;
+void* register_data(void *arg)
+{
+	int i;
+	Data d;
+	while(1)
+	{
+		//pthread_mutex_lock(&lock);
+		if(__kfifo_out(&g_ff,&d,1)>0)
+		{
+			printf("%d\t",d.id);
+			fflush(stdout);
+		}
+//		else 
+//			sleep(1);
+		//pthread_mutex_unlock(&lock);
+	}
+	
+	return 0;
+}
+void add_data()
+{
+	int i=0;
+	srand(time(NULL));
+	for(i=1;i<100;++i)
+	{
+//		sleep(rand()%3);
+		Data *d=(Data*)malloc(sizeof(Data));
+		d->id=i;
+		sprintf(d->data,"data %d",i);
+//		pthread_mutex_lock(&lock);
+		__kfifo_in(&g_ff,d,1);
+//		pthread_mutex_unlock(&lock);
+	}
+}
 
 int main()
 {
-	test_1();
+//	test_1();
+	pthread_t id;
+	pthread_mutex_init(&lock,NULL);
+
+	__kfifo_alloc(&g_ff,1024,sizeof(Data));
+	pthread_create(&id,0,register_data,0);
+	add_data();
+
+	sleep(100);
 
 	return 0;
 }
