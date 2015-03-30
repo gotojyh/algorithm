@@ -4,6 +4,8 @@
 #include "kfifo.h"
 #include "list.h"
 
+//
+
 struct __kfifo g_ff;
 typedef struct Data
 {
@@ -40,7 +42,7 @@ void* register_data(void *arg)
 	Data d;
 	while(1)
 	{
-		//pthread_mutex_lock(&lock);
+		pthread_mutex_lock(&lock);
 		if(__kfifo_out(&g_ff,&d,1)>0)
 		{
 			printf("%d\t",d.id);
@@ -48,7 +50,7 @@ void* register_data(void *arg)
 		}
 //		else 
 //			sleep(1);
-		//pthread_mutex_unlock(&lock);
+		pthread_mutex_unlock(&lock);
 	}
 	
 	return 0;
@@ -77,9 +79,10 @@ int main()
 
 	__kfifo_alloc(&g_ff,1024,sizeof(Data));
 	pthread_create(&id,0,register_data,0);
+	pthread_create(&id,0,register_data,0);
+	pthread_create(&id,0,register_data,0);
 	add_data();
 
 	sleep(100);
-
 	return 0;
 }
