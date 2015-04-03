@@ -13,6 +13,12 @@ typedef struct Data
 	char data[128];
 }Data;
 
+typedef struct DataNode
+{
+	Data d;
+	struct list_head *ptr;
+}DataNode;
+
 void test_1()
 {
 	struct __kfifo ff;
@@ -71,18 +77,37 @@ void add_data()
 	}
 }
 
+struct list_head g_head;
+void test_list()
+{
+	int i=0;
+	INIT_LIST_HEAD(&g_head);
+	for(i=0;i<100;++i)
+	{
+		DataNode *n=(DataNode*)malloc(sizeof(DataNode));
+		n->d.id=100-i;
+		list_add(n->ptr,&g_head);
+	}
+	DataNode *n1=list_first_entry(&g_head, DataNode ,ptr);
+
+
+	return ;
+}
+
 int main()
 {
 //	test_1();
-	pthread_t id;
-	pthread_mutex_init(&lock,NULL);
-
-	__kfifo_alloc(&g_ff,1024,sizeof(Data));
-	pthread_create(&id,0,register_data,0);
-	pthread_create(&id,0,register_data,0);
-	pthread_create(&id,0,register_data,0);
-	add_data();
-
-	sleep(100);
+//	pthread_t id;
+//	pthread_mutex_init(&lock,NULL);
+//
+//	__kfifo_alloc(&g_ff,1024,sizeof(Data));
+//	pthread_create(&id,0,register_data,0);
+//	pthread_create(&id,0,register_data,0);
+//	pthread_create(&id,0,register_data,0);
+//	add_data();
+//
+//	sleep(100);
+	test_list();
+	
 	return 0;
 }
