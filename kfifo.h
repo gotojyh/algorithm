@@ -251,16 +251,16 @@ struct __kfifo {
 //	__tmpl->kfifo.in - __tmpl->kfifo.out; \
 //})
 //
-///**
-// * kfifo_is_empty - returns true if the fifo is empty
-// * @fifo: address of the fifo to be used
-// */
-//#define	kfifo_is_empty(fifo) \
-//({ \
-//	typeof((fifo) + 1) __tmpq = (fifo); \
-//	__tmpq->kfifo.in == __tmpq->kfifo.out; \
-//})
-//
+/**
+ * kfifo_is_empty - returns true if the fifo is empty
+ * @fifo: address of the fifo to be used
+ */
+#define	kfifo_is_empty(fifo) \
+({ \
+	typeof((fifo) + 1) __tmpq = (fifo); \
+	__tmpq->kfifo.in == __tmpq->kfifo.out; \
+})
+
 ///**
 // * kfifo_is_full - returns true if the fifo is full
 // * @fifo: address of the fifo to be used
