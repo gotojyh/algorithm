@@ -1,13 +1,16 @@
 #ifndef _LINUX_LIST_H
 #define _LINUX_LIST_H
 
-//#include <linux/types.h>
-//#include <linux/stddef.h>
-//#include <linux/poison.h>
-//#include <linux/const.h>
-
 #define LIST_POISON1 ((void*)0x00100100)
 #define LIST_POISON2 ((void*)0x00200200)
+
+//type.member偏移量
+#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+
+//type.member=ptr,return type addr
+#define container_of(ptr, type, member) ({  \
+          const typeof( ((type *)0)->member ) *__mptr = (ptr); \
+          (type *)( (char *)__mptr - offsetof(type,member) );})
 
 /*
  * Simple doubly linked list implementation.
@@ -31,11 +34,14 @@ struct hlist_node {
 	struct hlist_node *next, **pprev;
 };
 
+//初始化list
 #define LIST_HEAD_INIT(name) { &(name), &(name) }
 
+//全局声明，当前作用域有效（如全局则链表全局有效，如局部则链表局部有效
 #define LIST_HEAD(name) \
 	struct list_head name = LIST_HEAD_INIT(name)
 
+//初始化
 static inline void INIT_LIST_HEAD(struct list_head *list)
 {
 	list->next = list;
@@ -72,6 +78,7 @@ extern void __list_add(struct list_head *new,
  * Insert a new entry after the specified head.
  * This is good for implementing stacks.
  */
+//将new后插到head list里
 static inline void list_add(struct list_head *new, struct list_head *head)
 {
 	__list_add(new, head, head->next);
@@ -86,6 +93,7 @@ static inline void list_add(struct list_head *new, struct list_head *head)
  * Insert a new entry before the specified head.
  * This is useful for implementing queues.
  */
+//将new前插到head list里
 static inline void list_add_tail(struct list_head *new, struct list_head *head)
 {
 	__list_add(new, head->prev, head);
@@ -116,6 +124,7 @@ static inline void __list_del_entry(struct list_head *entry)
 	__list_del(entry->prev, entry->next);
 }
 
+//删除结点
 static inline void list_del(struct list_head *entry)
 {
 	__list_del(entry->prev, entry->next);
@@ -154,6 +163,7 @@ static inline void list_replace_init(struct list_head *old,
  * list_del_init - deletes entry from list and reinitialize it.
  * @entry: the element to delete from the list.
  */
+//删除结点，并初始化entry
 static inline void list_del_init(struct list_head *entry)
 {
 	__list_del_entry(entry);
@@ -198,6 +208,7 @@ static inline int list_is_last(const struct list_head *list,
  * list_empty - tests whether a list is empty
  * @head: the list to test.
  */
+//是否为空
 static inline int list_empty(const struct list_head *head)
 {
 	return head->next == head;
@@ -216,6 +227,7 @@ static inline int list_empty(const struct list_head *head)
  * to the list entry is list_del_init(). Eg. it cannot be used
  * if another CPU could re-list_add() it.
  */
+//why careful ??
 static inline int list_empty_careful(const struct list_head *head)
 {
 	struct list_head *next = head->next;
@@ -362,6 +374,8 @@ static inline void list_splice_tail_init(struct list_head *list,
  * @type:	the type of the struct this is embedded in.
  * @member:	the name of the list_struct within the struct.
  */
+//the same as container_of
+//type.member=ptr,return type addr
 #define list_entry(ptr, type, member) \
 	container_of(ptr, type, member)
 
@@ -419,6 +433,7 @@ static inline void list_splice_tail_init(struct list_head *list,
  * @pos:	the &struct list_head to use as a loop cursor.
  * @head:	the head for your list.
  */
+//从head->next开始，遍历list typeof(pos)=list_head
 #define list_for_each(pos, head) \
 	for (pos = (head)->next; pos != (head); pos = pos->next)
 
@@ -436,6 +451,7 @@ static inline void list_splice_tail_init(struct list_head *list,
  * @n:		another &struct list_head to use as temporary storage
  * @head:	the head for your list.
  */
+//临时留n typeof(n)=list_head
 #define list_for_each_safe(pos, n, head) \
 	for (pos = (head)->next, n = pos->next; pos != (head); \
 		pos = n, n = pos->next)
@@ -457,6 +473,7 @@ static inline void list_splice_tail_init(struct list_head *list,
  * @head:	the head for your list.
  * @member:	the name of the list_struct within the struct.
  */
+//遍历list,typeof(pos)=type member=type里的list_head的成员名
 #define list_for_each_entry(pos, head, member)				\
 	for (pos = list_first_entry(head, typeof(*pos), member);	\
 	     &pos->member != (head);					\
