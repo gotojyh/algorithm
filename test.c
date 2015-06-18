@@ -16,7 +16,7 @@ typedef struct Data
 typedef struct DataNode
 {
 	Data d;
-	struct list_head *ptr;
+	struct list_head ptr;
 }DataNode;
 
 void test_1()
@@ -86,10 +86,9 @@ void test_list()
 	{
 		DataNode *n=(DataNode*)malloc(sizeof(DataNode));
 		n->d.id=100-i;
-		list_add(n->ptr,&g_head);
+		list_add(&n->ptr,&g_head);
 	}
-	DataNode *n1=list_first_entry(&g_head, DataNode ,ptr);
-
+	DataNode *n1=list_first_entry(&g_head,DataNode,ptr);
 
 	return ;
 }

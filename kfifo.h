@@ -54,7 +54,6 @@
 //#include <linux/spinlock.h>
 //#include <linux/stddef.h>
 //#include <linux/scatterlist.h>
-#include <stddef.h>
 
 
 struct __kfifo {

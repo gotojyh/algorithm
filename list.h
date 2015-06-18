@@ -1,11 +1,13 @@
 #ifndef _LINUX_LIST_H
 #define _LINUX_LIST_H
 
+#include <stddef.h>
+
 #define LIST_POISON1 ((void*)0x00100100)
 #define LIST_POISON2 ((void*)0x00200200)
 
 //type.member偏移量
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+//#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 //type.member=ptr,return type addr
 #define container_of(ptr, type, member) ({  \
