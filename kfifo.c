@@ -110,7 +110,6 @@ int __kfifo_init(struct __kfifo *fifo, void *buffer,unsigned int size, size_t es
 }
 //EXPORT_SYMBOL(__kfifo_init);
 
-//从src中向fifo+off copy 数据，数据长度为len
 static void kfifo_copy_in(struct __kfifo *fifo, const void *src,unsigned int len, unsigned int off)
 {
 	unsigned int size = fifo->mask + 1;
@@ -125,15 +124,14 @@ static void kfifo_copy_in(struct __kfifo *fifo, const void *src,unsigned int len
 	}
 	l = min(len, size - off);
 
-	memcpy(fifo->data + off, src, l);//copy
-	memcpy(fifo->data, src + l, len - l);//if 缓冲区不够，则剩余的数据循环copy
+	memcpy(fifo->data + off, src, l);
+	memcpy(fifo->data, src + l, len - l);
 	/*
 	 * make sure that the data in the fifo is up to date before
 	 * incrementing the fifo->in index counter
 	 */
 	//smp_wmb();
 }
-//如果len大于剩余缓冲区，则存入剩余缓冲区大小
 unsigned int __kfifo_in(struct __kfifo *fifo,const void *buf, unsigned int len)
 {
 	unsigned int l;
@@ -148,7 +146,6 @@ unsigned int __kfifo_in(struct __kfifo *fifo,const void *buf, unsigned int len)
 }
 //EXPORT_SYMBOL(__kfifo_in);
 
-//copy to dst from fifo+off
 static void kfifo_copy_out(struct __kfifo *fifo, void *dst,unsigned int len, unsigned int off)
 {
 	unsigned int size = fifo->mask + 1;
@@ -171,7 +168,6 @@ static void kfifo_copy_out(struct __kfifo *fifo, void *dst,unsigned int len, uns
 	 */
 	//smp_wmb();
 }
-//fifo-> fifo->out copy to buf
 unsigned int __kfifo_out_peek(struct __kfifo *fifo,void *buf, unsigned int len)
 {
 	unsigned int l;
